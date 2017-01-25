@@ -11,7 +11,6 @@ function printQuestionMarks(num){
 };
 
 function objToSql(ob){
-  //column1=value, column2=value2,...
   var arr = [];
 
   for (var key in ob) {
@@ -22,18 +21,19 @@ function objToSql(ob){
 };
 
 var orm = {
-	all: function(tableInput, cb){
+	selectAll: function(tableInput, db){
 		var queryString = 'SELECT * FROM ' + tableInput;
 
 		connection.query(queryString, function(err, result){
 			if(err) throw err;
-			cb(result);
+			db(result);
 		});
 	},
-	create: function(table, col, vals, cb){
+	insertOne: function(table, cols, vals, db){
 		var queryString = 'INSERT INTO ' + table;
+
 		queryString = queryString + ' (';
-		queryString = queryString + col.toString(); 
+		queryString = queryString + cols.toString(); 
 		queryString = queryString + ') ';
 		queryString = queryString + 'VALUES (';
 		queryString = queryString + printQuestionMarks(vals.length);
@@ -41,11 +41,12 @@ var orm = {
 
 		connection.query(queryString, vals, function(err, result){
 			if(err) throw err;
-			cb(result);
+			db(result);
 		});
 	},
-	update: function(table, objColVals, condition, cb){
+	updateOne: function(table, objColVals, condition, db){
 		var queryString = 'UPDATE ' + table;
+
 		queryString = queryString + ' SET ';
 		queryString = queryString + objToSql(objColVals);
 		queryString = queryString + ' WHERE ';
@@ -55,9 +56,9 @@ var orm = {
 
 		connection.query(queryString, function(err, result){
 			if(err) throw err;
-			cb(result);
+			db(result);
 		});
 	}
 };
 
-module.exports=orm;
+module.exports = orm;
